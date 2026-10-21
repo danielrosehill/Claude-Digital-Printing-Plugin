@@ -37,13 +37,13 @@ Pulled from `<job>/order.json`:
 1. If no zip exists at `<job>.zip`, invoke `zip-job-folder` first.
 2. Check zip size — if over 20 MB, recommend switching to `email-with-link` or `gdrive`.
 3. Compose email using the auto-generated body.
-4. Send via the user's configured email channel — Resend (`resend-personal__send-email`) or Google Workspace (`gws-personal__send_email`). Choice of provider depends on whether the user wants the message in their Sent folder (use Gmail/`gws-personal`) or whether it's a transactional send (use Resend).
+4. Send via the user's configured email channel — Resend (`resend-personal__send-email`) or Gmail (`google-workspace-personal__send_gmail_message`, zip passed in `attachments` as a `url` or `path` entry). Choice of provider depends on whether the user wants the message in their Sent folder (use Gmail) or whether it's a transactional send (use Resend).
 5. Report `Sent to <recipient> at <time>`.
 
 ### Email-with-link
 
-1. Upload the job folder (or its zip) to Google Drive via `gws-personal__upload_file` / `gws-personal__create_folder`.
-2. Set sharing per the recipient: `gws-personal__share_file` with `role=reader` (or `commenter` if requested).
+1. Upload the job folder (or its zip) to Google Drive: `google-workspace-personal__create_drive_folder` for the job folder, then `google-workspace-personal__create_drive_file` per file with `folder_id` set. The tool takes `content` (text), `base64_content`, or a `fileUrl` it fetches — not a local path — so for a binary zip/PDF either pass `base64_content` (small files) or stage the file at a short-lived URL and pass that as `fileUrl`.
+2. Set sharing per the recipient: `google-workspace-personal__manage_drive_access` with `action=grant`, `share_with=<email>`, `role=reader` (or `commenter` if requested). Get the link with `google-workspace-personal__get_drive_shareable_link`.
 3. Compose email body with the share link in place of an attachment.
 4. Send.
 
